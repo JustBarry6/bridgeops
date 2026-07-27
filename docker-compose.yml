@@ -1,0 +1,17 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+
+  redis:
+    image: redis:7
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: bridgeops
+      POSTGRES_PASSWORD: bridgeops
+      POSTGRES_DB: bridgeops
