@@ -5,6 +5,7 @@ from datetime import datetime
 from sqlalchemy import Column, DateTime, Integer, Text
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import ForeignKey
 
 from app.core.database import Base
 
@@ -20,6 +21,7 @@ class Transfer(Base):
     __tablename__ = "transfers"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    connection_id = Column(UUID(as_uuid=True), ForeignKey("connections.id"), nullable=True)
     source = Column(Text, nullable=False)
     destination = Column(Text, nullable=False)
     status = Column(

@@ -21,6 +21,14 @@ services:
     ports:
       - "10000:10000"
 
+  sftp-test:
+    image: atmoz/sftp
+    command: testuser:testpass:1001
+    ports:
+      - "2222:22"
+    volumes:
+      - sftp_data:/home/testuser/upload
+
   api:
     build: .
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
@@ -49,3 +57,4 @@ services:
 
 volumes:
   postgres_data:
+  sftp_data:

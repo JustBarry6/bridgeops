@@ -13,7 +13,11 @@ router = APIRouter(prefix="/transfers", tags=["transfers"])
 
 @router.post("", response_model=TransferOut, status_code=201)
 def create_transfer(payload: TransferCreate, db: Session = Depends(get_db)):
-    transfer = Transfer(source=payload.source, destination=payload.destination)
+    transfer = Transfer(
+        source=payload.source,
+        destination=payload.destination,
+        connection_id=payload.connection_id,
+    )
     db.add(transfer)
     db.commit()
     db.refresh(transfer)
