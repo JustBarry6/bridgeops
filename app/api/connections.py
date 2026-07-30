@@ -1,5 +1,6 @@
 import json
 import uuid
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -28,7 +29,10 @@ def _validate_credentials(type_: ConnectionType, credentials: dict):
 
 
 @router.post("", response_model=ConnectionOut, status_code=201)
-def create_connection(payload: ConnectionCreate, db: Session = Depends(get_db)):
+def create_connection(
+    payload: ConnectionCreate,
+    db: Annotated[Session, Depends(get_db)],
+):
     _validate_credentials(payload.type, payload.credentials)
     encrypted = encrypt(json.dumps(payload.credentials))
     connection = Connection(name=payload.name, type=payload.type, encrypted_credentials=encrypted)
@@ -39,12 +43,15 @@ def create_connection(payload: ConnectionCreate, db: Session = Depends(get_db)):
 
 
 @router.get("", response_model=list[ConnectionOut])
-def list_connections(db: Session = Depends(get_db)):
+def list_connections(db: Annotated[Session, Depends(get_db)]):
     return db.query(Connection).order_by(Connection.created_at.desc()).all()
 
 
 @router.delete("/{connection_id}", status_code=204)
-def delete_connection(connection_id: uuid.UUID, db: Session = Depends(get_db)):
+def delete_connection(
+    connection_id: uuid.UUID,
+    db: Annotated[Session, Depends(get_db)],
+):
     connection = db.query(Connection).filter(Connection.id == connection_id).first()
     if not connection:
         raise HTTPException(404, "Connection not found")

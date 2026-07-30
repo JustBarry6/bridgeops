@@ -9,4 +9,4 @@ celery_app = Celery(
 )
 
 # Importé ici pour que Celery enregistre les tâches au démarrage du worker.
-from app.workers import tasks  # noqa: E402,F401
+from app.workers import tasks  # noqa: F401

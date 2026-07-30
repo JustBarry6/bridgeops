@@ -1,6 +1,8 @@
 import json
 import uuid
 
+import paramiko
+from azure.core.exceptions import AzureError
 from celery.utils.log import get_task_logger
 
 from app.connectors.azure_blob import upload_file as upload_to_azure_blob
@@ -82,7 +84,18 @@ def execute_transfer(self, transfer_id: str):
         transfer.log += f"Attempt {attempt} succeeded: {result_message}\n"
         db.commit()
 
-    except Exception as exc:
+    except (
+        SimulatedFailure,
+        ValueError,
+        FileNotFoundError,
+        PermissionError,
+        OSError,
+        json.JSONDecodeError,
+        KeyError,
+        TypeError,
+        paramiko.SSHException,
+        AzureError,
+    ) as exc:
         if attempt <= MAX_RETRIES:
             countdown = RETRY_BACKOFF_SECONDS * (2 ** (attempt - 1))
             transfer.log += f"Attempt {attempt} failed: {exc}. Retrying in {countdown}s...\n"

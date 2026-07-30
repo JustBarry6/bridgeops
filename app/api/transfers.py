@@ -1,4 +1,5 @@
 import uuid
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -12,7 +13,10 @@ router = APIRouter(prefix="/transfers", tags=["transfers"])
 
 
 @router.post("", response_model=TransferOut, status_code=201)
-def create_transfer(payload: TransferCreate, db: Session = Depends(get_db)):
+def create_transfer(
+    payload: TransferCreate,
+    db: Annotated[Session, Depends(get_db)],
+):
     transfer = Transfer(
         source=payload.source,
         destination=payload.destination,
@@ -28,12 +32,15 @@ def create_transfer(payload: TransferCreate, db: Session = Depends(get_db)):
 
 
 @router.get("", response_model=list[TransferOut])
-def list_transfers(db: Session = Depends(get_db)):
+def list_transfers(db: Annotated[Session, Depends(get_db)]):
     return db.query(Transfer).order_by(Transfer.created_at.desc()).all()
 
 
 @router.get("/{transfer_id}", response_model=TransferOut)
-def get_transfer(transfer_id: uuid.UUID, db: Session = Depends(get_db)):
+def get_transfer(
+    transfer_id: uuid.UUID,
+    db: Annotated[Session, Depends(get_db)],
+):
     transfer = db.query(Transfer).filter(Transfer.id == transfer_id).first()
     if not transfer:
         raise HTTPException(status_code=404, detail="Transfer not found")

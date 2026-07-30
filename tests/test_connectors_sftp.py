@@ -2,6 +2,7 @@ import os
 import uuid
 
 import pytest
+from paramiko.ssh_exception import AuthenticationException
 
 from app.connectors.sftp import upload_file
 
@@ -27,7 +28,7 @@ def test_upload_file_wrong_credentials_raises(tmp_path):
     test_file = tmp_path / "sample.txt"
     test_file.write_text("hello")
 
-    with pytest.raises(Exception):
+    with pytest.raises(AuthenticationException):
         upload_file(
             source_path=str(test_file),
             remote_path="upload/sample.txt",
