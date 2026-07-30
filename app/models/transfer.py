@@ -1,6 +1,6 @@
 import enum
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 
 from sqlalchemy import Column, DateTime, Integer, Text
 from sqlalchemy import Enum as SAEnum
@@ -34,5 +34,5 @@ class Transfer(Base):
     retry_count = Column(Integer, default=0)
     priority = Column(Integer, default=0)
     log = Column(Text, default="")
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
+    updated_at = Column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))

@@ -1,6 +1,6 @@
 import enum
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 
 from sqlalchemy import Column, DateTime, Text
 from sqlalchemy import Enum as SAEnum
@@ -26,6 +26,6 @@ class Connection(Base):
     # JSON chiffré : {host, port, username, password|private_key} pour SFTP,
     # {connection_string} pour Azure Blob.
     encrypted_credentials = Column(Text, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
 
     # TODO : owner_id (FK vers User) une fois l'authentification JWT en place.
