@@ -5,9 +5,14 @@ from azure.storage.blob import BlobServiceClient, ContentSettings
 
 from app.core.config import settings
 
+AZURITE_COMPATIBLE_API_VERSION = "2023-11-03"
+
 
 def _get_blob_service_client(connection_string: str) -> BlobServiceClient:
-    return BlobServiceClient.from_connection_string(connection_string)
+    return BlobServiceClient.from_connection_string(
+        connection_string,
+        api_version=AZURITE_COMPATIBLE_API_VERSION,
+    )
 
 
 def _ensure_container(client: BlobServiceClient, container_name: str):

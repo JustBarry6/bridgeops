@@ -1,7 +1,28 @@
 import io
+import posixpath
 from pathlib import Path
 
 import paramiko
+
+
+def _ensure_remote_dir(sftp: paramiko.SFTPClient, remote_dir: str) -> None:
+    path = remote_dir.strip()
+    if not path:
+        return
+
+    normalized = path.lstrip("/")
+    if not normalized:
+        return
+
+    current = ""
+    for segment in normalized.split("/"):
+        if not segment:
+            continue
+        current = posixpath.join(current, segment) if current else segment
+        try:
+            sftp.stat(current)
+        except FileNotFoundError:
+            sftp.mkdir(current)
 
 
 def upload_file(
@@ -29,6 +50,8 @@ def upload_file(
 
         sftp = paramiko.SFTPClient.from_transport(transport)
         try:
+            remote_dir = posixpath.dirname(remote_path)
+            _ensure_remote_dir(sftp, remote_dir)
             sftp.put(str(local_path), remote_path)
         finally:
             sftp.close()
