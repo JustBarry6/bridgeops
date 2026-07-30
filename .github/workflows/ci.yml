@@ -38,7 +38,7 @@ jobs:
       sftp-test:
         image: atmoz/sftp
         env:
-          SFTP_USERS: testuser:testpass:1001
+          SFTP_USERS: testuser:testpass:1001:1001:upload
         ports:
           - 2222:22
 
