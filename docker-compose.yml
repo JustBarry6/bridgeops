@@ -23,11 +23,11 @@ services:
 
   sftp-test:
     image: atmoz/sftp
-    command: testuser:testpass:1001
+    command: testuser:testpass:1001:1001:upload
     ports:
       - "2222:22"
-    volumes:
-      - sftp_data:/home/testuser/upload
+    #volumes:
+    #  - sftp_data:/home/testuser/upload
 
   api:
     build: .
@@ -57,4 +57,4 @@ services:
 
 volumes:
   postgres_data:
-  sftp_data:
+  #sftp_data:
