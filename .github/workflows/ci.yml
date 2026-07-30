@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: bridgeops
+          POSTGRES_PASSWORD: bridgeops
+          POSTGRES_DB: bridgeops
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+
+      azurite:
+        image: mcr.microsoft.com/azure-storage/azurite
+        ports:
+          - 10000:10000
+
+      sftp-test:
+        image: atmoz/sftp
+        env:
+          SFTP_USERS: testuser:testpass:1001
+        ports:
+          - 2222:22
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Lint with ruff
+        run: ruff check .
+
+      - name: Run tests
+        env:
+          DATABASE_URL: postgresql://bridgeops:bridgeops@localhost:5432/bridgeops
+          REDIS_URL: redis://localhost:6379/0
+          AZURE_STORAGE_CONNECTION_STRING: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://localhost:10000/devstoreaccount1;"
+          JWT_SECRET_KEY: test-secret-key
+          FERNET_KEY: "URWlnPHJPHgKrbAtk2dDzHBa-wvqDpBDkvIAsCenNlA="
+          SIMULATE_FAILURE: "false"
+          SFTP_TEST_HOST: localhost
+          SFTP_TEST_PORT: "2222"
+        run: pytest
