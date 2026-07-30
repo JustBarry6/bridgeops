@@ -6,10 +6,8 @@ from azure.storage.blob import BlobServiceClient, ContentSettings
 from app.core.config import settings
 
 
-def _get_blob_service_client() -> BlobServiceClient:
-    return BlobServiceClient.from_connection_string(
-        settings.azure_storage_connection_string
-    )
+def _get_blob_service_client(connection_string: str) -> BlobServiceClient:
+    return BlobServiceClient.from_connection_string(connection_string)
 
 
 def _ensure_container(client: BlobServiceClient, container_name: str):
@@ -27,31 +25,27 @@ def _file_md5(path: Path) -> str:
     return hash_md5.hexdigest()
 
 
-def upload_file(source_path: str, container_name: str, transfer_id: str) -> tuple[str, str]:
-    """
-    Upload un fichier local vers Azure Blob Storage (Azurite en dev).
-    Le nom du blob est déterministe (basé sur transfer_id) : un retry du
-    même transfert écrase le même blob au lieu d'en créer un nouveau.
-    """
+def upload_file(
+    source_path: str,
+    container_name: str,
+    transfer_id: str,
+    connection_string: str | None = None,
+) -> tuple[str, str]:
     path = Path(source_path)
     if not path.exists():
         raise FileNotFoundError(f"Source file not found: {source_path}")
 
+    connection_string = connection_string or settings.azure_storage_connection_string
     blob_name = f"{transfer_id}_{path.name}"
 
-    client = _get_blob_service_client()
+    client = _get_blob_service_client(connection_string)
     container_client = _ensure_container(client, container_name)
     blob_client = container_client.get_blob_client(blob_name)
-
     local_hash = _file_md5(path)
 
     with open(path, "rb") as data:
         blob_client.upload_blob(
-            data,
-            overwrite=True,
-            # Le SDK calcule un MD5 pendant le transfert et Azure (ou Azurite)
-            # rejette l'upload en cas de corruption détectée.
-            validate_content=True,
+            data, overwrite=True, validate_content=True,
             content_settings=ContentSettings(content_type="application/octet-stream"),
         )
 
