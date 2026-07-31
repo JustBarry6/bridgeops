@@ -1,0 +1,4 @@
+[tool.ruff.lint]
+# On dit à Ruff d'ignorer le faux positif FastAPI (B008) 
+# et l'erreur de fichier exécutable Windows (EXE002)
+ignore = ["B008", "EXE002"]

@@ -1,5 +1,5 @@
-def test_create_connection_encrypts_credentials(client, db_session):
-    response = client.post(
+def test_create_connection_encrypts_credentials(authenticated_client, db_session):
+    response = authenticated_client.post(
         "/connections",
         json={
             "name": "test-sftp",
@@ -20,16 +20,16 @@ def test_create_connection_encrypts_credentials(client, db_session):
     assert "testpass" not in connection.encrypted_credentials
 
 
-def test_create_connection_missing_fields_returns_422(client):
-    response = client.post(
+def test_create_connection_missing_fields_returns_422(authenticated_client):
+    response = authenticated_client.post(
         "/connections",
         json={"name": "bad-sftp", "type": "sftp", "credentials": {"host": "x"}},
     )
     assert response.status_code == 422
 
 
-def test_list_connections_never_exposes_credentials(client):
-    client.post(
+def test_list_connections_never_exposes_credentials(authenticated_client):
+    authenticated_client.post(
         "/connections",
         json={
             "name": "test-blob",
@@ -37,7 +37,7 @@ def test_list_connections_never_exposes_credentials(client):
             "credentials": {"connection_string": "UseDevelopmentStorage=true"},
         },
     )
-    response = client.get("/connections")
+    response = authenticated_client.get("/connections")
     assert response.status_code == 200
     for connection in response.json():
         assert "credentials" not in connection
