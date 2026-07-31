@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Transfert {{ transfer.id }} — BridgeOps{% endblock %}
+{% block body %}
+<div class="topbar">
+  <div class="brand">BridgeOps<span>Cloud File Orchestrator</span></div>
+  <a href="/dashboard" class="btn btn-ghost">&larr; Retour</a>
+</div>
+
+<main>
+  <div class="panel">
+    <h2>Détail du transfert</h2>
+    <p class="mono">{{ transfer.id }}</p>
+    <p>{{ transfer.source }} &rarr; {{ transfer.destination }}</p>
+    <p>
+      <span class="status-badge status-{{ transfer.status.value }}">
+        <span class="status-dot"></span>{{ transfer.status.value }}
+      </span>
+    </p>
+  </div>
+
+  <div class="panel">
+    <h2>Journal</h2>
+    <div class="log-block">{{ transfer.log }}</div>
+  </div>
+</main>
+{% endblock %}

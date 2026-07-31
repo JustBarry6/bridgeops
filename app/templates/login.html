@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Connexion — BridgeOps{% endblock %}
+{% block body %}
+<div class="auth-page">
+  <div class="auth-card">
+    <h1>BridgeOps</h1>
+    <p class="tagline">Cloud File Orchestrator</p>
+    {% if error %}
+    <div class="error-message">Email ou mot de passe incorrect.</div>
+    {% endif %}
+    <form method="post" action="/dashboard/login">
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required autofocus>
+      </div>
+      <div class="field">
+        <label for="password">Mot de passe</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <button type="submit" class="btn">Se connecter</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

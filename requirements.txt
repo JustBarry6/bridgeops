@@ -19,3 +19,4 @@ httpx
 ruff
 python-multipart
 email-validator
+jinja2

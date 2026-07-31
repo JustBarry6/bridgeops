@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — BridgeOps{% endblock %}
+{% block body %}
+<div class="topbar">
+  <div class="brand">BridgeOps<span>Cloud File Orchestrator</span></div>
+  <div class="topbar-user">
+    {{ user.email }}
+    <form method="post" action="/dashboard/logout" style="margin:0;">
+      <button type="submit" class="btn btn-ghost">Déconnexion</button>
+    </form>
+  </div>
+</div>
+
+<main>
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-value" id="stat-today">—</div>
+      <div class="stat-label">Aujourd'hui</div>
+    </div>
+    <div class="stat-card running">
+      <div class="stat-value" id="stat-running">—</div>
+      <div class="stat-label">En cours</div>
+    </div>
+    <div class="stat-card completed">
+      <div class="stat-value" id="stat-completed">—</div>
+      <div class="stat-label">Terminés</div>
+    </div>
+    <div class="stat-card failed">
+      <div class="stat-value" id="stat-failed">—</div>
+      <div class="stat-label">Échoués</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="stat-duration">—</div>
+      <div class="stat-label">Durée moyenne</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Nouveau transfert</h2>
+    <form id="new-transfer-form" class="form-row">
+      <div class="field">
+        <label for="source">Source</label>
+        <input type="text" id="source" name="source" placeholder="sample-files/test.txt" required>
+      </div>
+      <div class="field">
+        <label for="destination">Destination</label>
+        <input type="text" id="destination" name="destination" placeholder="transfers" required>
+      </div>
+      <div class="field">
+        <label for="connection_id">Connexion</label>
+        <select id="connection_id" name="connection_id">
+          <option value="">Par défaut (Azure Blob)</option>
+          {% for connection in connections %}
+          <option value="{{ connection.id }}">{{ connection.name }} ({{ connection.type.value }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn">Lancer</button>
+    </form>
+  </div>
+
+  <div class="panel">
+    <h2>Transferts</h2>
+    <div class="live-indicator"><span class="live-dot"></span>Actualisation automatique</div>
+    <table id="transfers-table">
+      <thead>
+        <tr><th>ID</th><th>Flux</th><th>Statut</th><th>Tentatives</th><th>Créé</th><th></th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</main>
+
+<script src="/static/dashboard.js"></script>
+{% endblock %}
