@@ -2,7 +2,7 @@ import enum
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import Column, DateTime, Text
+from sqlalchemy import Column, DateTime, ForeignKey, Text
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -28,4 +28,4 @@ class Connection(Base):
     encrypted_credentials = Column(Text, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(UTC))
 
-    # TODO : owner_id (FK vers User) une fois l'authentification JWT en place.
+    owner_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)

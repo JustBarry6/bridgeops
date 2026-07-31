@@ -35,3 +35,5 @@ class Transfer(Base):
     log = Column(Text, default="")
     created_at = Column(DateTime, default=lambda: datetime.now(UTC))
     updated_at = Column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
+
+    owner_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
